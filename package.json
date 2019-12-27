@@ -1,0 +1,16 @@
+{
+  "name": "lesson-1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "hello-npm.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "nodemon main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ansi": "^0.3.1"
+  }
+}
