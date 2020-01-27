@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="/styles/style.css">
+</head>
+<body>
+    <div class="container">
+        
+        <form action="/tasks" method="post">
+            <h1>Пожалуйста, выберите канал новостей</h1>
+            <div class="formBlock">    
+                <input type="radio" name="choice" value="https://news-rss.ru/katalog-rss-kanalov/glavnye-novosti/mir-novostej" id="site 1">
+                <label for="site 1">Новости "Мир новостей"</label>
+                <input type="radio" name="choice" value="https://news-rss.ru/katalog-rss-kanalov/glavnye-novosti/bbc-russkaya-sluzhba" id="site 2">
+                <label for="site 2">Новости "BBC: Русская служба"</label>
+                <input type="radio" name="choice" value="https://news-rss.ru/katalog-rss-kanalov/glavnye-novosti/lenta-ru" id="site 3">
+                <label for="site 3">Новости "Lenta.ru"</label>
+                
+            </div>
+            <div class="selectBlock">
+                <select id="num" class="form-control" name='quantity'>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                </select>
+                <label for="num">Выберите количесво новостей</label>
+            </div>
+            <div class="buttonBlock">
+                <button class="submit" type="submit" value="Send">Показать</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
