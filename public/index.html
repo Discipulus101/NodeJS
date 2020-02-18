@@ -27,6 +27,7 @@
     }
     input{
         width: 70%;
+        margin: 5px;
     }
     .taskCompleted{
         color:green;
@@ -36,18 +37,45 @@
         color: red;
         font-size: 20px;
     }
+    .buttonAuth{
+        border-radius: 5px;
+        border: 2px solid #bcd821;
+        padding: 5px;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    form{
+        border-radius: 5px;
+        border: 2px solid #bcd821;
+        padding: 15px;
+        margin-bottom: 10px;
+        text-align: center;
+    }
     </style>
     <title>Document</title>
 </head>
 <body>
     <div id="app">
         <div class="container">
+            <button class="buttonAuth" v-on:click="visible=!visible">Форма авторизации: {{visible?'скрыть':'показать'}}</button>
+            <div v-show="visible">
+                <form class="login">
+                    <h1>Sign in</h1>
+                    <!-- <label>User name</label> -->
+                    <input required v-model="username" type="text" placeholder="username"/> <br>
+                    <!-- <label>Password</label> -->
+                    <input required v-model="password" type="password" placeholder="Password"/>
+                    <hr/>
+                    <button type="submit" v-on:click="auth(username, password)">Login</button>
+                </form>
+            </div>
+        </div>
+        <div class="container vue"> 
             <div class="create-task">
                 <input type="text" id="create-task" v-model="text" placeholder="Опишите задачу">
                 <button v-on:click="createTask">Создать</button>
-            </div>
-        </div>
-        <div class="container vue">          
+            </div>         
             <div class="task" v-for="(task, index) of tasks" v-on:dblclick="deleteTask(task._id)">
                 <div class="task">
                     <h1>{{ task.title }}</h1>
@@ -74,13 +102,26 @@
             el: '#app',
             data: {
                 url: 'http://localhost:8888/tasks/',
+                urlAuth: 'http://localhost:8888/auth',
                 tasks: [],
-                text: ''
+                text: '',
+                token: {},
+                username: '',
+                password: '',
+                visible: true
             },
             methods: {
                 getJSON (url) {
-                    return fetch (url)
-                        .then (d => d.json ())
+                    if (localStorage.getItem('token')){
+                        this.token=JSON.parse(localStorage.getItem('token')).token
+                    }
+                    return fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json;charset=utf-8',
+                            Authorization:'Bearer ' + this.token,
+                        },
+                    }).then (d => d.json ())
                 },
                 reload () {
                     this.getJSON (this.url)
@@ -91,7 +132,8 @@
                     fetch(this.url, {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json;charset=utf-8'
+                            'Content-Type': 'application/json;charset=utf-8',
+                            Authorization:'Bearer ' + this.token,
                         },
                         body: JSON.stringify({
                             title: this.text,
@@ -103,7 +145,8 @@
                     fetch(this.url + `${idTask}`, {
                         method: 'PATCH',
                         headers: {
-                            'Content-Type': 'application/json;charset=utf-8'
+                            'Content-Type': 'application/json;charset=utf-8',
+                            Authorization:'Bearer ' + this.token,
                         },
                         body: JSON.stringify({
                             completed: true,
@@ -116,6 +159,10 @@
                 },
                 deleteTask(idTask){
                     fetch(this.url + `${idTask}`, {
+                        headers: {
+                            'Content-Type': 'application/json;charset=utf-8',
+                            Authorization:'Bearer ' + this.token,
+                        },
                         method: 'DELETE',
                         params:JSON.stringify({
                             id: idTask,
@@ -123,6 +170,23 @@
                     });
                     this.reload ()
                 },
+                auth(username,password){                   
+                    fetch(this.urlAuth, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json;charset=utf-8'
+                        },
+                        body: JSON.stringify({
+                            "username": username,
+                            "password": password
+                        }),
+                    })
+                    .then (d => d.json ())
+                    .then (data => {localStorage.setItem('token',JSON.stringify(data))})
+                },
+                toggleTask () {
+                    this.collapsed = !this.collapsed
+                }
             },
             computed: {
 

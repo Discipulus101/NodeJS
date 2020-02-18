@@ -7,7 +7,7 @@ const router = require('./router');
 
 const axios = require('axios');
 
-mongoose.connect('mongodb://192.168.99.100:32768/insta', {
+mongoose.connect('mongodb://192.168.99.100:32769/insta', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -15,25 +15,25 @@ mongoose.connect('mongodb://192.168.99.100:32768/insta', {
 const app = express();
 app.use(cors());
 app.use(express.json());
-// app.use('/tasks', async (req, res, next) => {
-//   if (!req.headers.authorization) {
-//     console.log('req.headers', req.headers.authorization)
-//     return res.json({ message: 'No token' });
+app.use('/tasks', async (req, res, next) => {
+  if (!req.headers.authorization) {
+    console.log('req.headers', req.headers.authorization, req.headers)
+    return res.json({ message: 'No token' });
     
-//   } else {
-//     const [type, token] = req.headers.authorization.split(' ');
+  } else {
+    const [type, token] = req.headers.authorization.split(' ');
 
-//     jwt.verify(token, 'secret-user-phrase', (err, payload) => {
-//       if (err) {
-//         return res.json({ message: 'Wrong token' });
-//       }
+    jwt.verify(token, 'secret-user-phrase', (err, payload) => {
+      if (err) {
+        return res.json({ message: 'Wrong token' });
+      }
 
-//       req.user = payload;
+      req.user = payload;
 
-//       next();
-//     });
-//   }
-// });
+      next();
+    });
+  }
+});
 
 app.use('/', express.static('public'))
 
