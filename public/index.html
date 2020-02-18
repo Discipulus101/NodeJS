@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style>
+    .container {
+        display: flex;
+        flex-direction: column;
+        width: 40%;
+        margin: 0 auto
+    }
+    .task {
+        border-radius: 5px;
+        border: 2px solid grey;
+        padding: 15px;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+    .create-task{
+        border-radius: 5px;
+        border: 2px solid #bcd821;
+        padding: 15px;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+    input{
+        width: 70%;
+    }
+    .taskCompleted{
+        color:green;
+        font-size: 20px;
+    }
+    .taskNotCompleted{
+        color: red;
+        font-size: 20px;
+    }
+    </style>
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <div class="container">
+            <div class="create-task">
+                <input type="text" id="create-task" v-model="text" placeholder="Опишите задачу">
+                <button v-on:click="createTask">Создать</button>
+            </div>
+        </div>
+        <div class="container vue">          
+            <div class="task" v-for="(task, index) of tasks" v-on:dblclick="deleteTask(task._id)">
+                <div class="task">
+                    <h1>{{ task.title }}</h1>
+                </div>
+                <div class="task-body">
+                    <p>
+                        id задачи: {{ task._id }}
+                    </p>
+                    <p class="taskCompleted" v-if="task.completed">
+                        Выполнена
+                    </p>
+                    <p class="taskNotCompleted" v-else>
+                        Не выполнена
+                    </p>
+                </div>
+                <button @click="deleteTask(task._id)" data-id="task._id">Удалить задачу</button>
+                <button @click="updateTask(task._id)" data-id="task._id">Выполнить задачу</button>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        let app = new Vue ({
+            el: '#app',
+            data: {
+                url: 'http://localhost:8888/tasks/',
+                tasks: [],
+                text: ''
+            },
+            methods: {
+                getJSON (url) {
+                    return fetch (url)
+                        .then (d => d.json ())
+                },
+                reload () {
+                    this.getJSON (this.url)
+                        .then (data => {this.tasks = data})
+                },
+                createTask(){
+                    console.log('createTask', this.text)
+                    fetch(this.url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json;charset=utf-8'
+                        },
+                        body: JSON.stringify({
+                            title: this.text,
+                        }),
+                    });
+                    this.reload ()
+                },
+                updateTask(idTask){
+                    fetch(this.url + `${idTask}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json;charset=utf-8'
+                        },
+                        body: JSON.stringify({
+                            completed: true,
+                        }),
+                        params:JSON.stringify({
+                            id: idTask,
+                        }),
+                    });
+                    this.reload ()
+                },
+                deleteTask(idTask){
+                    fetch(this.url + `${idTask}`, {
+                        method: 'DELETE',
+                        params:JSON.stringify({
+                            id: idTask,
+                        }),
+                    });
+                    this.reload ()
+                },
+            },
+            computed: {
+
+            },
+            mounted () {
+                this.getJSON (this.url)
+                    .then (data => {this.tasks = data})
+            },
+            created () {
+
+            }
+        })
+    </script>
+</body>
+</html>
